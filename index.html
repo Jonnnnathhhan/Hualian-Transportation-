@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>出行 - 花蓮長者交通預約</title>
+  <style>
+    :root {
+      --bg-color: #F4F6F4;
+      --card-bg: #FFFFFF;
+      --primary-dark: #1D4A38;
+      --primary-hover: #15372A;
+      --active-green: #296B50;
+      --light-green-bg: #F0F7F4;
+      --border-color: #DDE4E0;
+      --input-border: #8FA499;
+      --text-main: #17251C;
+      --text-sub: #556B60;
+      --line-brand: #06C755;
+      --line-hover: #05B34C;
+      --danger-color: #C63D31;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", "Noto Sans TC", sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Top Banner Header */
+    .header-banner {
+      background-color: var(--primary-dark);
+      color: #FFFFFF;
+      padding: 24px;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(29, 74, 56, 0.15);
+    }
+
+    .header-banner::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      top: -20px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      pointer-events: none;
+    }
+
+    .header-tag {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #A3D9C9;
+      margin-bottom: 8px;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .header-subtitle {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #E0EFEA;
+    }
+
+    /* Main Section Cards */
+    .card-section {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .section-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title-icon {
+      width: 44px;
+      height: 44px;
+      background-color: var(--light-green-bg);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-dark);
+      flex-shrink: 0;
+    }
+
+    .section-title-text {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .field-label {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Option Cards (Ride Type) */
+    .option-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-card {
+      border: 2px solid var(--border-color);
+      background-color: #FFFFFF;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 68px;
+    }
+
+    .option-card:hover {
+      border-color: var(--active-green);
+    }
+
+    .option-card.selected {
+      border-color: var(--active-green);
+      background-color: var(--light-green-bg);
+    }
+
+    .radio-circle {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--input-border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background-color: #FFFFFF;
+    }
+
+    .option-card.selected .radio-circle {
+      border-color: var(--active-green);
+    }
+
+    .radio-inner {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--active-green);
+      display: none;
+    }
+
+    .option-card.selected .radio-inner {
+      display: block;
+    }
+
+    .option-icon {
+      width: 40px;
+      height: 40px;
+      background-color: rgba(41, 107, 80, 0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-dark);
+      flex-shrink: 0;
+    }
+
+    .option-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .option-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .option-desc {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    /* Inputs & Destination Grid */
+    .text-input {
+      width: 100%;
+      min-height: 56px;
+      border: 2px solid var(--input-border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      background-color: #FFFFFF;
+      outline: none;
+    }
+
+    .text-input:focus {
+      border-color: var(--active-green);
+    }
+
+    .dest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .dest-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dest-btn {
+      min-height: 56px;
+      border: 2px solid var(--border-color);
+      background-color: #FFFFFF;
+      border-radius: 14px;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .dest-btn:hover {
+      border-color: var(--active-green);
+      background-color: var(--light-green-bg);
+    }
+
+    .dest-btn.active {
+      border-color: var(--active-green);
+      background-color: var(--light-green-bg);
+      box-shadow: 0 0 0 1px var(--active-green);
+    }
+
+    .dest-name-zh {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .date-time-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .date-time-row .field-group {
+      flex: 1;
+    }
+
+    /* Toggle Switch Card */
+    .toggle-card {
+      background-color: var(--light-green-bg);
+      border: 1px solid rgba(41, 107, 80, 0.2);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .toggle-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .toggle-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 56px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #B0C4B8;
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider {
+      background-color: var(--active-green);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    /* Buttons */
+    .action-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .btn-main {
+      width: 100%;
+      min-height: 60px;
+      background-color: var(--primary-dark);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 16px;
+      font-size: 20px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(29, 74, 56, 0.2);
+    }
+
+    .btn-main:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-line {
+      width: 100%;
+      min-height: 56px;
+      background-color: var(--line-brand);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .btn-line:hover {
+      background-color: var(--line-hover);
+    }
+
+    /* Empty state & Trip Cards */
+    .empty-state {
+      text-align: center;
+      padding: 30px 16px;
+      color: var(--text-sub);
+      font-size: 16px;
+      font-weight: 700;
+      background-color: var(--light-green-bg);
+      border: 2px dashed var(--border-color);
+      border-radius: 16px;
+    }
+
+    .trip-card {
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background-color: #FFFFFF;
+    }
+
+    .trip-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .trip-type-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .status-badge.confirmed {
+      background-color: #E6F4EA;
+      color: #137333;
+    }
+
+    .status-badge.cancelled {
+      background-color: #FCE8E6;
+      color: var(--danger-color);
+    }
+
+    .trip-datetime {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .trip-route {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-sub);
+      line-height: 1.4;
+    }
+
+    .trip-share-status {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--active-green);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .trip-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn-call-direct {
+      flex: 1;
+      min-height: 48px;
+      background-color: var(--light-green-bg);
+      color: var(--primary-dark);
+      border: 2px solid var(--primary-dark);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-cancel {
+      min-height: 48px;
+      padding: 0 16px;
+      background-color: transparent;
+      color: var(--danger-color);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* SVG Icons */
+    .icon {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .icon-line {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Top Banner -->
+    <header class="header-banner">
+      <div class="header-tag">行 · MOBILITY</div>
+      <h1 class="header-title">出行</h1>
+      <p class="header-subtitle">預約交通，家人同步放心。</p>
+    </header>
+
+    <!-- Transport Booking Section -->
+    <section class="card-section">
+      
+      <div class="section-title-group">
+        <div class="section-title-icon">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>
+            <circle cx="7" cy="17" r="2"></circle>
+            <circle cx="17" cy="17" r="2"></circle>
+          </svg>
+        </div>
+        <h2 class="section-title-text">預約交通</h2>
+      </div>
+
+      <!-- Ride Type Options -->
+      <div class="field-group">
+        <label class="field-label">交通方式</label>
+        <div class="option-cards">
+          
+          <div class="option-card selected" id="opt-taxi" onclick="selectRideType('taxi')">
+            <div class="radio-circle">
+              <div class="radio-inner"></div>
+            </div>
+            <div class="option-icon">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>
+                <circle cx="7" cy="17" r="2"></circle>
+                <circle cx="17" cy="17" r="2"></circle>
+              </svg>
+            </div>
+            <div class="option-info">
+              <span class="option-title">一般計程車</span>
+              <span class="option-desc">約 10–15 分鐘到達</span>
+            </div>
+          </div>
+
+          <div class="option-card" id="opt-rehab" onclick="selectRideType('rehab')">
+            <div class="radio-circle">
+              <div class="radio-inner"></div>
+            </div>
+            <div class="option-icon">
+              <svg class="icon" viewBox="0 0 24 24">
+                <circle cx="9" cy="5" r="2"></circle>
+                <path d="M9 7v5e1 0 0 0 1 1h4a1 1 0 0 1 1 1v4"></path>
+                <path d="M6 13a5 5 0 1 0 6 5"></path>
+              </svg>
+            </div>
+            <div class="option-info">
+              <span class="option-title">花蓮縣長照復康巴士</span>
+              <span class="option-desc">輪椅可上車，請提前預約</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Pick-up Location -->
+      <div class="field-group">
+        <label class="field-label" for="pickup-input">上車地點</label>
+        <input type="text" id="pickup-input" class="text-input" value="住家" placeholder="請輸入上車地址" />
+      </div>
+
+      <!-- Destination Selection Grid -->
+      <div class="field-group">
+        <label class="field-label">目的地</label>
+        <div class="dest-grid">
+          
+          <button class="dest-btn active" onclick="setDestination('花蓮慈濟醫院', this)">
+            <span class="dest-name-zh">花蓮慈濟醫院</span>
+          </button>
+
+          <button class="dest-btn" onclick="setDestination('門諾醫院', this)">
+            <span class="dest-name-zh">門諾醫院</span>
+          </button>
+
+          <button class="dest-btn" onclick="setDestination('衛生福利部花蓮醫院', this)">
+            <span class="dest-name-zh">衛生福利部花蓮醫院</span>
+          </button>
+
+          <button class="dest-btn" onclick="setDestination('國軍花蓮總醫院', this)">
+            <span class="dest-name-zh">國軍花蓮總醫院</span>
+          </button>
+
+          <button class="dest-btn" onclick="setDestination('重慶市場', this)">
+            <span class="dest-name-zh">重慶市場</span>
+          </button>
+
+          <button class="dest-btn" onclick="setDestination('中華市場', this)">
+            <span class="dest-name-zh">中華市場</span>
+          </button>
+
+        </div>
+        <input type="text" id="dest-custom-input" class="text-input" value="花蓮慈濟醫院" placeholder="或輸入地址" />
+      </div>
+
+      <!-- Date & Time Row -->
+      <div class="date-time-row">
+        <div class="field-group">
+          <label class="field-label" for="ride-date">日期</label>
+          <input type="date" id="ride-date" class="text-input" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="ride-time">時間</label>
+          <input type="time" id="ride-time" class="text-input" />
+        </div>
+      </div>
+
+      <!-- Family Share Toggle Card -->
+      <div class="toggle-card">
+        <div class="toggle-info">
+          <span class="toggle-title">發送行程給伴侶/家人</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="share-toggle" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Main Actions -->
+      <div class="action-stack">
+        <button class="btn-main" onclick="handleBookingSubmit()">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M22 2L11 13"></path>
+            <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+          </svg>
+          送出預約
+        </button>
+
+        <button class="btn-line" onclick="shareToLINE()">
+          <svg class="icon-line" viewBox="0 0 24 24">
+            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63h-2.425v1.125h2.425c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-3.056c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63h3.056c.349 0 .63.285.63.63 0 .346-.281.631-.63.631h-2.425v1.125h2.425zm-4.788 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.412-.105-.53-.285l-2.264-3.253v2.881c0 .344-.282.629-.63.629-.345 0-.63-.285-.63-.629V8.108c0-.27.173-.51.43-.595.064-.023.134-.033.2-.033.21 0 .412.106.529.287l2.265 3.254V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-6.284 0c0 .344-.282.629-.63.629-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.345 0 .63.285.63.63v4.771zm-2.474 0c0 .344-.285.629-.63.629H2.138c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63s.63.285.63.63v4.141h1.826c.345 0 .63.285.63.631zM12 2C6.477 2 2 5.865 2 10.635c0 4.258 3.535 7.825 8.307 8.525.324.07.766.216.877.495.101.254.066.652.032.911-.07.516-.454 2.016-.499 2.228-.06.279.278.438.484.288 2.666-1.942 5.568-4.225 7.601-7.227C20.672 16.143 22 13.565 22 10.635 22 5.865 17.523 2 12 2z"/>
+          </svg>
+          LINE 一鍵傳送給家人
+        </button>
+      </div>
+
+    </section>
+
+    <!-- My Trips Section (Starts Empty) -->
+    <section class="card-section">
+      
+      <div class="section-title-group">
+        <div class="section-title-icon">
+          <svg class="icon" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+        <h2 class="section-title-text">我的行程</h2>
+      </div>
+
+      <div id="trips-container" style="display: flex; flex-direction: column; gap: 14px;">
+        <div id="empty-msg" class="empty-state">
+          目前尚無預約行程
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <script>
+    let selectedRideType = 'taxi';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+      const timeStr = now.toTimeString().substring(0, 5);
+      
+      document.getElementById('ride-date').value = dateStr;
+      document.getElementById('ride-time').value = timeStr;
+    });
+
+    function selectRideType(type) {
+      selectedRideType = type;
+      document.getElementById('opt-taxi').classList.toggle('selected', type === 'taxi');
+      document.getElementById('opt-rehab').classList.toggle('selected', type === 'rehab');
+    }
+
+    function setDestination(destText, btnElement) {
+      document.getElementById('dest-custom-input').value = destText;
+      
+      const buttons = document.querySelectorAll('.dest-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+    }
+
+    function getTripDetailsText() {
+      const rideTypeName = selectedRideType === 'taxi' 
+        ? '一般計程車' 
+        : '花蓮縣長照復康巴士';
+      
+      const pickup = document.getElementById('pickup-input').value || '住家';
+      const destination = document.getElementById('dest-custom-input').value || '花蓮慈濟醫院';
+      const date = document.getElementById('ride-date').value;
+      const time = document.getElementById('ride-time').value;
+
+      return `【花蓮長者出行預約通知】\n` +
+             `交通方式：${rideTypeName}\n` +
+             `時間：${date} ${time}\n` +
+             `行程：${pickup} ➔ ${destination}\n` +
+             `請家人協助留意關注！`;
+    }
+
+    function shareToLINE() {
+      const text = getTripDetailsText();
+      const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
+      window.open(lineUrl, '_blank');
+    }
+
+    function handleBookingSubmit() {
+      const emptyMsg = document.getElementById('empty-msg');
+      if (emptyMsg) {
+        emptyMsg.remove();
+      }
+
+      const isShareEnabled = document.getElementById('share-toggle').checked;
+      const rideTypeName = selectedRideType === 'taxi' 
+        ? '一般計程車' 
+        : '花蓮縣長照復康巴士';
+      
+      const pickup = document.getElementById('pickup-input').value || '住家';
+      const destination = document.getElementById('dest-custom-input').value || '花蓮慈濟醫院';
+      const date = document.getElementById('ride-date').value;
+      const time = document.getElementById('ride-time').value;
+      const phoneNum = selectedRideType === 'taxi' ? '0800055850' : '1966';
+
+      const tripsContainer = document.getElementById('trips-container');
+      const tripId = 'trip-' + Date.now();
+
+      const newTripHTML = `
+        <div class="trip-card" id="${tripId}">
+          <div class="trip-card-header">
+            <div class="trip-type-label">
+              <svg class="icon" viewBox="0 0 24 24">
+                ${selectedRideType === 'taxi' 
+                  ? '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><circle cx="17" cy="17" r="2"></circle>'
+                  : '<circle cx="9" cy="5" r="2"></circle><path d="M9 7v5e1 0 0 0 1 1h4a1 1 0 0 1 1 1v4"></path><path d="M6 13a5 5 0 1 0 6 5"></path>'
+                }
+              </svg>
+              <span>${rideTypeName}</span>
+            </div>
+            <span class="status-badge confirmed">已確認</span>
+          </div>
+          <div class="trip-datetime">${date} ${time}</div>
+          <div class="trip-route">${pickup} → ${destination}</div>
+          ${isShareEnabled ? `
+            <div class="trip-share-status">
+              <svg class="icon" style="width: 18px; height: 18px;" viewBox="0 0 24 24">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              已與家人分享行程
+            </div>` : ''
+          }
+          <div class="trip-actions">
+            <a href="tel:${phoneNum}" class="btn-call-direct">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              立即撥打叫車 (${phoneNum})
+            </a>
+            <button class="btn-cancel" onclick="cancelTrip('${tripId}')">取消</button>
+          </div>
+        </div>
+      `;
+
+      tripsContainer.insertAdjacentHTML('afterbegin', newTripHTML);
+
+      if (isShareEnabled) {
+        shareToLINE();
+      }
+
+      window.location.href = `tel:${phoneNum}`;
+    }
+
+    function cancelTrip(tripId) {
+      const card = document.getElementById(tripId);
+      if (card) {
+        const badge = card.querySelector('.status-badge');
+        if (badge) {
+          badge.className = 'status-badge cancelled';
+          badge.textContent = '已取消';
+        }
+      }
+    }
+  </script>
+</body>
+</html>
+
